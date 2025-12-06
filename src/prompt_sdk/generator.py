@@ -1,16 +1,40 @@
 from jinja2.nodes import Template
-from prompt_sdk.utils import sanitize_name
+from prompt_sdk.utils import get_prompt_files, sanitize_function_name, sanitize_prompt
 from prompt_sdk.config import settings
 from jinja2 import Environment, FileSystemLoader, meta
 from pathlib import Path
+import textwrap
 
 
-def get_variables_from_template(env: Environment, template_name: str) -> set[str]:
+def get_function_code(
+    function_name: str,
+    function_description: str,
+    args_str: str,
+    prompt: str,
+    kwargs_str: str,
+    use_class: bool,
+):
+    function_code = f"""
+def {function_name}({args_str}) -> str:
+    \"\"\"
+    {function_description}
+    \"\"\"
+    template_str = \"\"\"{prompt}\"\"\"
+    return Template(template_str).render({kwargs_str})
+"""
+    if use_class:
+        return textwrap.indent(f"@staticmethod\n{function_code}", "    ")
+    else:
+        return function_code
+
+
+def get_variables_from_template(env: Environment, template_name: str) -> list[str]:
     """Parses a Jinja2 template to find undeclared variables."""
     template_source: str = env.loader.get_source(env, template_name)[0]
     parsed_content: Template = env.parse(template_source)
     # find_undeclared_variables returns a set of variable names found in {{ }}
-    return meta.find_undeclared_variables(parsed_content)
+    variables = meta.find_undeclared_variables(parsed_content)
+    return sorted(list(variables))
 
 
 def generate_sdk():
@@ -21,59 +45,35 @@ def generate_sdk():
         "# AUTOMATICALLY GENERATED FILE. DO NOT EDIT.",
         "from jinja2 import Template",
         "",
-        f"class {settings.class_name}:",
+        f"class {settings.class_name}:" if settings.use_class else "",
     ]
+    files = get_prompt_files()
 
     # Iterate over all markdown files in the folder
-    supported_extensions = [".md"]
-    files = [
-        file
-        for file in settings.input_path.glob("*")
-        if file.suffix in supported_extensions
-    ]
-
     if not files:
         print(f"No templates found in {settings.input_path}")
         return
 
     for file in files:
-        function_name = sanitize_name(Path(file).stem)
-
+        function_name = sanitize_function_name(Path(file).stem)
         variables = get_variables_from_template(env, file.name)
-        sorted_vars = sorted(list(variables))
 
         # Create function arguments string: "name: str, company: str"
-        args_str = ", ".join([f"{var}: str" for var in sorted_vars])
+        args_str = ", ".join([f"{var}: str" for var in variables])
 
         # Create dictionary for the template: "{'name': name, 'company': company}"
-        kwargs_str = ", ".join([f"{var}={var}" for var in sorted_vars])
+        kwargs_str = ", ".join([f"{var}={var}" for var in variables])
 
         file_path = settings.input_path / file.name
-        raw_content = file_path.read_text()
+        prompt = file_path.read_text()
 
-        # Escape triple quotes to prevent syntax errors in the generated string
-        raw_content_safe = raw_content.replace('"""', '\\"\\"\\"')
-
-        # Append the function definition
-        function_code = (
-            f"""
-    @staticmethod
-    def {function_name}({args_str}) -> str:
-        \"\"\"
-        Generates prompt for: {file.name}
-        \"\"\"
-        template_str = \"\"\"{raw_content_safe}\"\"\"
-        return Template(template_str).render({kwargs_str})
-"""
-            if settings.use_class
-            else f"""
-def {function_name}({args_str}) -> str:
-    \"\"\"
-    Generates prompt for: {file.name}
-    \"\"\"
-    template_str = \"\"\"{raw_content_safe}\"\"\"
-    return Template(template_str).render({kwargs_str})
-"""
+        function_code = get_function_code(
+            function_name,
+            function_name,
+            args_str,
+            sanitize_prompt(prompt),
+            kwargs_str,
+            settings.use_class,
         )
         output_code.append(function_code)
 
