@@ -1,6 +1,7 @@
+from prompt_sdk.validators import PyFile
+from pydantic.types import DirectoryPath
 from pathlib import Path
 
-from pydantic import BaseModel
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -9,17 +10,8 @@ from pydantic_settings import (
 )
 
 
-class Nested(BaseModel):
-    foo: int
-    bar: int = 0
-
-
 class Settings(BaseSettings):
-    PROJ_ROOT: Path = Path(__file__).resolve().parents[3]
-
-    hello: str
-    nested: Nested
-    model_config = SettingsConfigDict(toml_file=["default.toml", "config.custom.toml"])
+    PROJ_ROOT: Path = Path(__file__).resolve().parents[2]
 
     @classmethod
     def settings_customise_sources(
@@ -30,13 +22,18 @@ class Settings(BaseSettings):
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
     ) -> tuple[PydanticBaseSettingsSource, ...]:
-        return (TomlConfigSettingsSource(settings_cls, deep_merge=True),)
+        return (TomlConfigSettingsSource(settings_cls),)
 
 
 class GeneratorSettings(Settings):
     model_config = SettingsConfigDict(
         pyproject_toml_table_header=("tool", "prompt-sdk")
     )
-    directories: list[Path]
+    input_path: DirectoryPath = Path.cwd() / "tests" / "prompts"
+    print(input_path)
     use_class: bool = True
-    output_path: Path
+    output_path: PyFile = Path.cwd() / "tests" / "sdk.py"
+    class_name: str = "SDK"
+
+
+settings = GeneratorSettings()  # type: ignore
