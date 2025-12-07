@@ -20,6 +20,3 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = ["pytest>=9.0.1"]
-
-[tool.prompt-sdk]
-input_path = "prompts"

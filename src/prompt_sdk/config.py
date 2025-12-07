@@ -1,3 +1,6 @@
+from pydantic_settings.sources.providers.pyproject import (
+    PyprojectTomlConfigSettingsSource,
+)
 from pathlib import Path
 
 from pydantic.types import DirectoryPath
@@ -5,7 +8,6 @@ from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
     SettingsConfigDict,
-    TomlConfigSettingsSource,
 )
 
 from prompt_sdk.validators import PyFile
@@ -25,7 +27,7 @@ class Settings(BaseSettings):
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
     ) -> tuple[PydanticBaseSettingsSource, ...]:
-        return (TomlConfigSettingsSource(settings_cls),)
+        return (PyprojectTomlConfigSettingsSource(settings_cls),)
 
 
 class GeneratorSettings(Settings):

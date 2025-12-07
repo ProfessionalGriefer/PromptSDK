@@ -10,14 +10,18 @@ def validate_input_path(path: Path | None) -> Path:
         raise typer.BadParameter(
             "Missing input path. Provide it via CLI or pyproject.toml."
         )
+    if not path.is_dir():
+        raise typer.BadParameter("Input path is not a directory.")
     return path
 
 
 def validate_output_path(path: Path | None) -> Path:
     if path is None:
         raise typer.BadParameter(
-            "Missing output path. Provide it via CLI or pyproject.toml."
+            "Missing output path. Provide it via CLI or pyproject.toml"
         )
+    if not path.is_file():
+        raise typer.BadParameter("Output path is not a file")
 
     if path.suffix != ".py":
         # This raises a clean CLI error instead of a crash
