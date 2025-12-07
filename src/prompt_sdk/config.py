@@ -1,6 +1,3 @@
-from pydantic_settings.sources.providers.pyproject import (
-    PyprojectTomlConfigSettingsSource,
-)
 from pathlib import Path
 
 from pydantic.types import DirectoryPath
@@ -9,13 +6,15 @@ from pydantic_settings import (
     PydanticBaseSettingsSource,
     SettingsConfigDict,
 )
+from pydantic_settings.sources.providers.pyproject import (
+    PyprojectTomlConfigSettingsSource,
+)
 
 from prompt_sdk.validators import PyFile
 
 
 class Settings(BaseSettings):
     PROJ_ROOT: Path = Path(__file__).resolve().parents[2]
-    TEMPLATES_DIR: Path = PROJ_ROOT / "src" / "prompt_sdk" / "templates"
     # print(f"Running in Project Root: {PROJ_ROOT}")
 
     @classmethod

@@ -1,6 +1,6 @@
 [project]
 name = "prompt-sdk-python"
-version = "0.1.0"
+dynamic = ["version"]
 authors = [{ name = "Vincent Nahn", email = "vincent@nahn.dev" }]
 description = "Generate client libraries from prompts."
 readme = "README.md"
@@ -15,35 +15,39 @@ dependencies = [
   "typer>=0.20.0",
 ]
 
+[dependency-groups]
+dev = ["pytest>=9.0.1"]
+
 [project.scripts]
 promptsdk = "prompt_sdk.main:app"
 
 [build-system]
-requires = ["uv_build>=0.9.16,<0.10.0"]
-build-backend = "uv_build"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
-[tool.uv.build-backend]
-module-name = "prompt_sdk"
+[tool.pdm]
+version = { source = "file", path = "src/prompt_sdk/__init__.py" }
+distribution = true
 
-[dependency-groups]
-dev = ["pytest>=9.0.1"]
+[tool.pdm.build]
+includes = ["src/prompt_sdk"]
+
 
 [tool.ruff.lint]
 select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
-    "TID", # flake8-tidy-imports
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort
+  "B",   # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "UP",  # pyupgrade
+  "TID", # flake8-tidy-imports
 ]
 ignore = [
-    "E501",   # line too long, handled by black
-    "B008",   # do not perform function calls in argument defaults
-    "C901",   # too complex
-    "W191",   # indentation contains tabs
-    "TID252", # relative imports okay
+  "E501",   # line too long, handled by black
+  "B008",   # do not perform function calls in argument defaults
+  "C901",   # too complex
+  "W191",   # indentation contains tabs
+  "TID252", # relative imports okay
 ]
-

@@ -1,10 +1,9 @@
 from pathlib import Path
-
-from jinja2 import Environment, FileSystemLoader
-
-from prompt_sdk.validators import validate_input_path, validate_output_path
 from typing import Annotated
+
 import typer
+from jinja2 import Environment, FileSystemLoader, PackageLoader, select_autoescape
+
 from prompt_sdk.config import settings
 from prompt_sdk.models import TemplateInput
 from prompt_sdk.utils import (
@@ -14,7 +13,7 @@ from prompt_sdk.utils import (
     sanitize_function_name,
     sanitize_prompt,
 )
-
+from prompt_sdk.validators import validate_input_path, validate_output_path
 
 app = typer.Typer()
 
@@ -61,7 +60,9 @@ def generate_sdk(
     output_path = validate_output_path(output_path)
 
     input_env = Environment(loader=FileSystemLoader(input_path))
-    output_env = Environment(loader=FileSystemLoader(settings.TEMPLATES_DIR))
+    output_env = Environment(
+        loader=PackageLoader("prompt_sdk", "templates"), autoescape=select_autoescape()
+    )
     sdk_template = output_env.get_template("sdk_template.py.jinja")
 
     # Start building the Python file content

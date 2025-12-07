@@ -191,7 +191,6 @@ wheels = [
 
 [[package]]
 name = "prompt-sdk-python"
-version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "jinja2" },
