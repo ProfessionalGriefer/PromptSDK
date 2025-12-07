@@ -30,9 +30,12 @@ class Settings(BaseSettings):
 
 class GeneratorSettings(Settings):
     model_config = SettingsConfigDict(
-        pyproject_toml_table_header=("tool", "prompt-sdk")
+        toml_file="pyproject.toml",
+        pyproject_toml_table_header=("tool", "prompt-sdk"),
+        extra="ignore",
     )
     input_path: DirectoryPath | None = None
+    print("Input path", input_path)
     output_path: PyFile | None = None
     use_class: bool = True
     class_name: str = "SDK"

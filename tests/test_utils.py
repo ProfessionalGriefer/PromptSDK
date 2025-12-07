@@ -1,4 +1,4 @@
-from prompt_sdk.utils import parse_prompt
+from prompt_sdk.utils import parse_prompt, sanitize_function_name
 from prompt_sdk.models import PromptFrontmatter
 
 
@@ -16,3 +16,13 @@ Bar
     assert prompt_frontmatter == PromptFrontmatter(
         name="Test", description="Test description"
     )
+
+
+def test_sanitize_function_name():
+    filenames = [
+        "info extractor.md",
+        "info-extractor.md",
+        "info_extractor.md",
+    ]
+    for filename in filenames:
+        assert sanitize_function_name(filename) == "info_extractor.md"

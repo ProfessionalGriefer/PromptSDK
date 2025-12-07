@@ -23,7 +23,9 @@ app = typer.Typer()
 def generate_sdk(
     input_path: Annotated[
         Path | None,
-        typer.Argument(
+        typer.Option(
+            "--input",
+            "-i",
             help="Input Directory, e.g. templates/",
             exists=True,  # Typer checks this
             file_okay=False,  # Must be a directory
@@ -33,7 +35,9 @@ def generate_sdk(
     ] = settings.input_path,
     output_path: Annotated[
         Path | None,
-        typer.Argument(
+        typer.Option(
+            "--output",
+            "-o",
             help="Output Python file",
             dir_okay=False,
             writable=True,
@@ -41,13 +45,16 @@ def generate_sdk(
     ] = settings.output_path,
     use_class: Annotated[
         bool,
-        typer.Argument(
-            help="True: Write functions as static methods of a class. False: Write functions directly into the output file."
+        typer.Option(
+            "--class/--function",
+            help="True: Write functions as static methods of a class. False: Write functions directly into the output file.",
         ),
     ] = settings.use_class,
     class_name: Annotated[
         str,
-        typer.Argument(help="Name of the generated class when use_class is True."),
+        typer.Option(
+            "--name", "-n", help="Name of the generated class when use_class is True."
+        ),
     ] = settings.class_name,
 ):
     input_path = validate_input_path(input_path)
@@ -68,7 +75,7 @@ def generate_sdk(
     functions: list[TemplateInput] = []
 
     for file in files:
-        function_name = sanitize_function_name(Path(file).stem)
+        function_name = Path(file).stem
         variables = get_variables_from_template(input_env, file.name)
 
         file_path = input_path / file.name
@@ -80,7 +87,7 @@ def generate_sdk(
 
         functions.append(
             {
-                "name": frontmatter.name or function_name,
+                "name": sanitize_function_name(frontmatter.name or function_name),
                 "description": frontmatter.description or "",
                 "args": args_str,
                 "kwargs": kwargs_str,

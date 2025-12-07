@@ -4,7 +4,6 @@ import frontmatter
 from jinja2 import Environment, meta
 from jinja2.nodes import Template
 
-from prompt_sdk.config import settings
 from prompt_sdk.models import PromptFrontmatter
 
 
@@ -28,7 +27,7 @@ def sanitize_prompt(prompt: str) -> str:
     return prompt.replace('"""', '\\"\\"\\"')
 
 
-def get_prompt_files(input_path: Path = settings.input_path):
+def get_prompt_files(input_path: Path):
     SUPPORTED_EXTENSIONS = [".md"]
     return [
         file for file in input_path.glob("*") if file.suffix in SUPPORTED_EXTENSIONS

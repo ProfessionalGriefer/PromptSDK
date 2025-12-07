@@ -1,5 +1,5 @@
 ---
-name: Foobar
+name: foobar
 ---
 # Examples
 

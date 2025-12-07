@@ -8,7 +8,7 @@ from pydantic.functional_validators import AfterValidator
 def validate_input_path(path: Path | None) -> Path:
     if path is None:
         raise typer.BadParameter(
-            "Error: Missing input path. Provide it via CLI or pyproject.toml."
+            "Missing input path. Provide it via CLI or pyproject.toml."
         )
     return path
 
@@ -16,7 +16,7 @@ def validate_input_path(path: Path | None) -> Path:
 def validate_output_path(path: Path | None) -> Path:
     if path is None:
         raise typer.BadParameter(
-            "Error: Missing output path. Provide it via CLI or pyproject.toml."
+            "Missing output path. Provide it via CLI or pyproject.toml."
         )
 
     if path.suffix != ".py":
