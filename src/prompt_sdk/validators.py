@@ -1,8 +1,8 @@
-from typing import Annotated
-from pydantic.functional_validators import AfterValidator
 from pathlib import Path
+from typing import Annotated
 
 import typer
+from pydantic.functional_validators import AfterValidator
 
 
 def validate_py_suffix(path: Path) -> Path:
