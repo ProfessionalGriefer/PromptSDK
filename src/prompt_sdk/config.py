@@ -12,6 +12,8 @@ from pydantic_settings import (
 
 class Settings(BaseSettings):
     PROJ_ROOT: Path = Path(__file__).resolve().parents[2]
+    TEMPLATES_DIR: Path = PROJ_ROOT / "src" / "prompt_sdk" / "templates"
+    print(f"Running in Project Root: {PROJ_ROOT}")
 
     @classmethod
     def settings_customise_sources(
@@ -31,9 +33,9 @@ class GeneratorSettings(Settings):
     )
     input_path: DirectoryPath = Path.cwd() / "tests" / "prompts"
     print(input_path)
-    use_class: bool = True
+    use_class: bool = False
     output_path: PyFile = Path.cwd() / "tests" / "sdk.py"
-    class_name: str = "SDK"
+    class_name: str = "Docs"
 
 
 settings = GeneratorSettings()  # type: ignore

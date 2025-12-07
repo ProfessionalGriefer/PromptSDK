@@ -1,0 +1,16 @@
+# GENERATED USING PROMPT-SDK. DO NOT EDIT.
+from jinja2 import Template
+
+{% if use_class %}
+class {{ class_name }}:{% endif %}
+{% for func in functions %}
+{%- set indent = '    ' if use_class else '' %}
+{% if use_class %}{{ indent }}@staticmethod
+{% endif -%}
+{{indent}}def {{ func.name }}({{ func.args }}) -> str:
+    {% if func.description %}{{ indent }}"""
+    {{ indent }}{{ func.description }}
+    {{ indent }}"""{% endif %}
+    {{ indent }}template_str = """{{ func.prompt }}"""
+    {{ indent }}return Template(template_str).render({{ func.kwargs }})
+{% endfor %}
