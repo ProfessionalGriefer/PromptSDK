@@ -1,4 +1,7 @@
 sdk.py
 .env*
 .envrc
+dist
+.ruff_cache
+.venv
 
