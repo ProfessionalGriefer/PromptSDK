@@ -2,8 +2,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
-from prompt_sdk.validators import PyFile
-from pydantic.types import DirectoryPath
+from prompt_sdk.validators import validate_input_path, validate_output_path
 from typing import Annotated
 import typer
 from prompt_sdk.config import settings
@@ -23,31 +22,43 @@ app = typer.Typer()
 @app.command(name="Prompt SDK", help="Generate client libraries from prompts.")
 def generate_sdk(
     input_path: Annotated[
-        PyFile,
-        typer.Argument(help="Input Directory, e.g. templates/"),
+        Path | None,
+        typer.Argument(
+            help="Input Directory, e.g. templates/",
+            exists=True,  # Typer checks this
+            file_okay=False,  # Must be a directory
+            dir_okay=True,
+            readable=True,
+        ),
     ] = settings.input_path,
     output_path: Annotated[
-        DirectoryPath, typer.Argument(help="Output Python file")
+        Path | None,
+        typer.Argument(
+            help="Output Python file",
+            dir_okay=False,
+            writable=True,
+        ),
     ] = settings.output_path,
     use_class: Annotated[
         bool,
         typer.Argument(
-            help="True: Write functions as static methods of a class\nFalse: Write functions directly into the file."
+            help="True: Write functions as static methods of a class. False: Write functions directly into the output file."
         ),
     ] = settings.use_class,
     class_name: Annotated[
         str,
-        typer.Argument(
-            help="Name of the generated class when use_class is True. Defaults to 'SDK'."
-        ),
+        typer.Argument(help="Name of the generated class when use_class is True."),
     ] = settings.class_name,
 ):
+    input_path = validate_input_path(input_path)
+    output_path = validate_output_path(output_path)
+
     input_env = Environment(loader=FileSystemLoader(input_path))
     output_env = Environment(loader=FileSystemLoader(settings.TEMPLATES_DIR))
     sdk_template = output_env.get_template("sdk_template.py.jinja")
 
     # Start building the Python file content
-    files = get_prompt_files()
+    files = get_prompt_files(input_path)
 
     # Iterate over all markdown files in the folder
     if not files:

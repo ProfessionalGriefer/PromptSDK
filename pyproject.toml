@@ -6,12 +6,12 @@ description = "Generate client libraries from prompts."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "jinja2>=3.1.6",
-    "markdown-it-py>=4.0.0",
-    "pydantic>=2.12.5",
-    "pydantic-settings[toml]>=2.12.0",
-    "python-frontmatter>=1.1.0",
-    "typer>=0.20.0",
+  "jinja2>=3.1.6",
+  "markdown-it-py>=4.0.0",
+  "pydantic>=2.12.5",
+  "pydantic-settings[toml]>=2.12.0",
+  "python-frontmatter>=1.1.0",
+  "typer>=0.20.0",
 ]
 
 [build-system]
@@ -22,4 +22,4 @@ build-backend = "uv_build"
 dev = ["pytest>=9.0.1"]
 
 [tool.prompt-sdk]
-search_path = "prompts"
+input_path = "prompts"
