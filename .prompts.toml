@@ -1,6 +1,0 @@
-app_name = "My Awesome App"
-debug_mode = true
-
-[database]
-host = "localhost"
-port = 5432

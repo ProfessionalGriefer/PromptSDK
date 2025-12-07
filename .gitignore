@@ -1,1 +1,4 @@
 sdk.py
+.env*
+.envrc
+
