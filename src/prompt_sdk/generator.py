@@ -1,24 +1,43 @@
 from jinja2.nodes import Template
-from prompt_sdk.utils import get_prompt_files, sanitize_function_name, sanitize_prompt
+from prompt_sdk.utils import (
+    get_prompt_files,
+    sanitize_function_name,
+    sanitize_prompt,
+    parse_prompt,
+)
 from prompt_sdk.config import settings
 from jinja2 import Environment, FileSystemLoader, meta
 from pathlib import Path
 import textwrap
 
 
+def get_file_code() -> list[str]:
+    return [
+        "# AUTOMATICALLY GENERATED FILE. DO NOT EDIT.",
+        "from jinja2 import Template",
+        "",
+        f"class {settings.class_name}:" if settings.use_class else "",
+    ]
+
+
 def get_function_code(
     function_name: str,
-    function_description: str,
+    function_description: str | None,
     args_str: str,
     prompt: str,
     kwargs_str: str,
     use_class: bool,
 ):
-    function_code = f"""
-def {function_name}({args_str}) -> str:
-    \"\"\"
+    doc_string = (
+        f"""\"\"\"
     {function_description}
-    \"\"\"
+    \"\"\""""
+        if function_description is not None
+        else ""
+    )
+
+    function_code = f"""def {function_name}({args_str}) -> str:
+    {doc_string}
     template_str = \"\"\"{prompt}\"\"\"
     return Template(template_str).render({kwargs_str})
 """
@@ -41,12 +60,7 @@ def generate_sdk():
     env = Environment(loader=FileSystemLoader(settings.input_path))
 
     # Start building the Python file content
-    output_code = [
-        "# AUTOMATICALLY GENERATED FILE. DO NOT EDIT.",
-        "from jinja2 import Template",
-        "",
-        f"class {settings.class_name}:" if settings.use_class else "",
-    ]
+    output_code: list[str] = get_file_code()
     files = get_prompt_files()
 
     # Iterate over all markdown files in the folder
@@ -65,11 +79,13 @@ def generate_sdk():
         kwargs_str = ", ".join([f"{var}={var}" for var in variables])
 
         file_path = settings.input_path / file.name
-        prompt = file_path.read_text()
+        file_content = file_path.read_text()
+
+        prompt, frontmatter = parse_prompt(file_content)
 
         function_code = get_function_code(
-            function_name,
-            function_name,
+            frontmatter.name or function_name,
+            frontmatter.description,
             args_str,
             sanitize_prompt(prompt),
             kwargs_str,

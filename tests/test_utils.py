@@ -1,4 +1,5 @@
-from prompt_sdk.utils import parse_prompt, PromptFrontmatter
+from prompt_sdk.utils import parse_prompt
+from prompt_sdk.models import PromptFrontmatter
 
 
 def test_parse_prompt():

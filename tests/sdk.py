@@ -1,17 +1,27 @@
 # AUTOMATICALLY GENERATED FILE. DO NOT EDIT.
 from jinja2 import Template
+from pathlib import Path
 
 
+class SDK:
+    @staticmethod
+    def info_extractor(data: str) -> str:
+        template_str = """# Examples
 
-def test(var: str) -> str:
-    """
-    test
-    """
-    template_str = """---
-description: "Test Markdown file"
----
-# This is a test
+    {{data}}"""
+        return Template(template_str).render(data=data)
 
-{{ var }}
-"""
-    return Template(template_str).render(var=var)
+    @staticmethod
+    def test(example: str) -> str:
+        """
+        Test Markdown file
+        """
+        template_str = """# This is a test
+
+    You are a very helpful assistant.
+    Example:
+    {{ example }}"""
+        return Template(template_str).render(example=example)
+
+
+(Path.cwd() / "out.md").write_text(SDK.info_extractor("asdf"))

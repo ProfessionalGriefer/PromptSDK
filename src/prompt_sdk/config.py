@@ -31,7 +31,7 @@ class GeneratorSettings(Settings):
     )
     input_path: DirectoryPath = Path.cwd() / "tests" / "prompts"
     print(input_path)
-    use_class: bool = False
+    use_class: bool = True
     output_path: PyFile = Path.cwd() / "tests" / "sdk.py"
     class_name: str = "SDK"
 

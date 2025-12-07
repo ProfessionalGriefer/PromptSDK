@@ -1,6 +1,6 @@
 from prompt_sdk.config import settings
+from prompt_sdk.models import PromptFrontmatter
 import frontmatter
-from pydantic import BaseModel, Field
 
 
 def sanitize_function_name(name: str) -> str:
@@ -18,14 +18,6 @@ def get_prompt_files():
         for file in settings.input_path.glob("*")
         if file.suffix in SUPPORTED_EXTENSIONS
     ]
-
-
-class PromptFrontmatter(BaseModel):
-    name: str | None = None
-    description: str | None = None
-
-    class Config:
-        extra = "ignore"  # Ignore extra fields in the YAML
 
 
 def parse_prompt(prompt: str) -> tuple[str, PromptFrontmatter]:
