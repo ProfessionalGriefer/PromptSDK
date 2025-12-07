@@ -5,9 +5,9 @@ PromptSDK is a CLI tool for generating client code with appropriate type signatu
 ## Installation
 
 ```bash
-uv add prompt-sdk
+uv add prompt-sdk-python
 
-uv run prompt-sdk --help
+uv run promptsdk --help
 ```
 
 ## Explanation
