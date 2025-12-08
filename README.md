@@ -1,5 +1,7 @@
 # PromptSDK
 
+![PyPI - Version](https://img.shields.io/pypi/v/prompt-sdk-python)
+
 PromptSDK is a CLI tool for generating client code with appropriate type signature from a folder containing prompts in Markdown format.
 
 ## Installation
